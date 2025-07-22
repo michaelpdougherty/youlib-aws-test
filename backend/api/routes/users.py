@@ -38,10 +38,71 @@ async def login(user_login: UserLogin, session: AsyncSession = Depends(get_sessi
   return JSONResponse(
      status_code=200,
      content={
-        "accessToken": jwt,
+        "accessToken": jwt, 
      }
   )
 
 @router.post("/register")
-async def register():
-  return {"route": "POST /register"}
+async def register(user_registration: UserRegistration, session: AsyncSession = Depends(get_session)):
+  # get email
+  # TODO validate email
+  email = user_registration.email
+
+  # get password
+  # TODO validate password
+  password = user_registration.password
+
+  # get name
+  first_name = user_registration.firstName
+  last_name = user_registration.lastName
+
+  # get zip code
+  zip_code = user_registration.zipCode
+
+  # get library name
+  library_name = user_registration.libraryName
+
+  statement = text("SELECT COUNT(*) FROM users WHERE email = :email")
+  data = await session.execute(statement, {"email": email})
+  result = data.scalar_one()  # returns the scalar value directly
+  if result > 0:
+     return JSONResponse(
+        status_code=400,
+        content={
+          "userSafeErrorMessage": "A user with this email already exists. Please sign in."
+        }
+     )
+  # TODO add password hashing
+  statement = text("INSERT INTO users (email, password, first_name, last_name, zip_code, library_name) VALUES (:email, :password, :first_name, :last_name, :zip_code, :library_name)")
+  await session.execute(
+    statement,
+    {
+      "email": email,
+      "password": password,
+      "first_name": first_name,
+      "last_name": last_name,
+      "zip_code": zip_code,
+      "library_name": library_name,
+    }
+  )
+  await session.commit()
+
+  # get user ID and generate access token
+  statement = text("SELECT id FROM users WHERE email = :email AND password = :password")
+  data = await session.execute(statement, { "email": email, "password": password })
+  user_id = data.scalar_one()
+  jwt = create_jwt(user_id)
+  
+  content = {
+    "email": email,
+    "firstName": first_name,
+    "lastName": last_name,
+    "zipCode": zip_code,
+    "libraryName": library_name,
+    "token": jwt,
+  }
+
+  return JSONResponse(
+    status_code=200,
+    content=content,
+  )

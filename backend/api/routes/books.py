@@ -15,6 +15,11 @@ from services.edition_service import fetch_book_data
 router = APIRouter()
 
 @router.get("/books/")
+async def get_books():
+  return {"route": "/books/"}
+
+"""
+@router.get("/books/")
 async def get_books(user_id: int = Depends(verify_jwt), session: AsyncSession = Depends(get_session)):
     statement = text(" " \
     "SELECT " \
@@ -136,3 +141,4 @@ async def register(user_id: int = Depends(verify_jwt), session: AsyncSession = D
 async def fetch_book(isbn: str, user_id: int = Depends(verify_jwt), session: AsyncSession = Depends(get_session)):
   data = await get_best_possible_edition_data(ISBN(isbn=isbn))
   return data
+"""

@@ -8,18 +8,14 @@ from utils.http_utils import upgrade_to_https
 from utils.isbn_utils import is_valid_isbn_check
 from utils.response_utils import client_error
 from db.session import get_session
-
 from collections import defaultdict
 from schemas import ISBN
+
+# This is the problem.
 #from services.edition_service import fetch_book_data
 
 router = APIRouter()
 
-@router.get("/books/")
-async def get_books():
-  return {"route": "/books/"}
-
-"""
 @router.get("/books/")
 async def get_books(user_id: int = Depends(verify_jwt), session: AsyncSession = Depends(get_session)):
     statement = text(" " \
@@ -84,7 +80,8 @@ async def add_book(isbn: ISBN, user_id: int = Depends(verify_jwt), session: Asyn
     # TODO - We should really make sure the user hasn't added the edition already HERE
     # before we pull everything from the DB if we're just going to return an error. 
 
-    edition = await fetch_book_data(isbn=isbn, session=session)
+    return {"message": "Fix this shit"}
+    # edition = await fetch_book_data(isbn=isbn, session=session)
     if isinstance(edition, JSONResponse):
       # Assumed error body
       return edition
@@ -142,4 +139,3 @@ async def register(user_id: int = Depends(verify_jwt), session: AsyncSession = D
 async def fetch_book(isbn: str, user_id: int = Depends(verify_jwt), session: AsyncSession = Depends(get_session)):
   data = await get_best_possible_edition_data(ISBN(isbn=isbn))
   return data
-"""

@@ -6,8 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from utils.jwt_utils import verify_jwt
 from utils.http_utils import upgrade_to_https
 from utils.isbn_utils import is_valid_isbn_check
-#from utils.response_utils import client_error
-#from db.session import get_session
+
+from utils.response_utils import client_error
+from db.session import get_session
 #from collections import defaultdict
 #from schemas import ISBN
 #from services.edition_service import fetch_book_data
